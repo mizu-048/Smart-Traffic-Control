@@ -1,10 +1,12 @@
-// Include the AccelStepper Library
 #include <AccelStepper.h>
 
-// ==== Stepper Motor Configuration ====
 // Pin connections for stepper motor driver
 const int dirPin = 2;
 const int stepPin = 3;
+
+// Traffic Lights Pin
+const int colPins[3] = { 12, 11, 10 };  //Red, Yellow, Green
+const int rowPins[4] = { 8, 7, 6, 5 };  // Traffic Signal 1-4 (indexed 0-3)
 
 // Define motor interface type (1 for A4988/DRV8825 style drivers)
 #define motorInterfaceType 1
@@ -13,9 +15,10 @@ const int stepPin = 3;
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
 // Stepper motor parameters
+// High speeds might lead to skipped steps and less rotation than was intended, either reduce speed or change current limiting resistor accordingly
 const long stepsPer90Degrees = 512;       // 2048 steps for 360 degrees, 512 for 90
 const float MAX_MOTOR_SPEED = 1000.0;     // Max speed in steps per second
-const float MOTOR_ACCELERATION = 1000.0;  // Max acceleration in steps per second^2
+const float MOTOR_ACCELERATION = 1000.0;  // Max acceleration ( only noticed when starting or stopping rotation )
 
 // Stepper motor operational modes controlled by Python
 enum StepperMode {
@@ -41,13 +44,6 @@ const unsigned long blinkInterval = 700;       // Blink every 0.7 seconds
 
 const unsigned long yellowLeadTime = 3000;  // Time before switch when yellow turns ON for the *NEXT* signal.
                                             // This will overlap with the current signal's green/yellow phases.
-
-// ==== Traffic Light Pin Assignments ====
-// ==== Column pins (R, Y, G) ====
-const int colPins[3] = { 6, 5, 4 };  // MAPPING: colPins[0]=RED, colPins[1]=YELLOW, colPins[2]=GREEN
-
-// ==== Row pins (Signal 1-4) ====
-const int rowPins[4] = { 10, 9, 8, 7 };  // Traffic Signal 1-4 (indexed 0-3)
 
 // ==== LED state array (matching colPins mapping: [row][RED, YELLOW, GREEN]) ====
 int ledState[4][3];  // Will be initialized in setup
